@@ -1,0 +1,204 @@
+<Window x:Class="Jogo.EstatisticasWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Jogo"
+        Title="UNO - Estatísticas" Height="600" Width="700"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <!-- Converte bool para Visibility (True → Visible, False → Collapsed) -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <local:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+    </Window.Resources>
+
+    <Grid>
+        <!-- FUNDO -->
+        <Grid.Background>
+            <ImageBrush ImageSource="/Assets/image.png" Stretch="UniformToFill"/>
+        </Grid.Background>
+
+        <!-- Overlay escuro -->
+        <Rectangle Fill="#66000000"/>
+
+        <!-- TÍTULO -->
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="0,25,0,0">
+            <TextBlock Text="E" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#E8001C" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="S" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#FFD700" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="T" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#007A33" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="A" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#0078D7" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="T" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#E8001C" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="Í" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#FFD700" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="S" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#007A33" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="T" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#0078D7" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="I" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#E8001C" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="C" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#FFD700" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="A" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#007A33" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+            <TextBlock Text="S" FontFamily="Impact" FontSize="52" FontWeight="Bold" Foreground="#0078D7" Margin="2,0">
+                <TextBlock.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="3" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- PAINEL CENTRAL COM TABELA -->
+        <Border HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Width="580" Height="360"
+                CornerRadius="16"
+                Background="#CC000000"
+                Margin="0,20,0,0">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="20" ShadowDepth="6" Opacity="0.7"/>
+            </Border.Effect>
+
+            <Grid Margin="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Cabeçalho da tabela -->
+                <Grid Grid.Row="0" Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="110"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Grid.ColumnSpan="5"
+                            Background="#AA8B4513" CornerRadius="8" Padding="4"/>
+
+                    <TextBlock Grid.Column="0" Text="JOGADOR" FontFamily="Impact" FontSize="16"
+                               Foreground="#FFD700" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" Margin="4"/>
+                    <TextBlock Grid.Column="1" Text="PARTIDAS" FontFamily="Impact" FontSize="14"
+                               Foreground="#FFD700" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" Margin="4" TextAlignment="Center">
+                        <TextBlock.Effect><DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+                    </TextBlock>
+                    <TextBlock Grid.Column="2" Text="VITÓRIAS" FontFamily="Impact" FontSize="14"
+                               Foreground="#FFD700" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" Margin="4" TextAlignment="Center">
+                        <TextBlock.Effect><DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+                    </TextBlock>
+                    <TextBlock Grid.Column="3" Text="JOGOS" FontFamily="Impact" FontSize="14"
+                               Foreground="#FFD700" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" Margin="4" TextAlignment="Center">
+                        <TextBlock.Effect><DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+                    </TextBlock>
+                    <TextBlock Grid.Column="4" Text="% VITÓRIA" FontFamily="Impact" FontSize="14"
+                               Foreground="#FFD700" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" Margin="4" TextAlignment="Center">
+                        <TextBlock.Effect><DropShadowEffect BlurRadius="4" ShadowDepth="1" Color="Black" Opacity="0.8"/></TextBlock.Effect>
+                    </TextBlock>
+                </Grid>
+
+                <!-- Separador -->
+                <Rectangle Grid.Row="0" Height="1" Fill="#88FFD700"
+                           VerticalAlignment="Bottom" Margin="0,32,0,0"/>
+
+                <!-- Lista de jogadores — ItemsSource ligado ao ViewModel -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,8,0,0"
+                              Visibility="{Binding SemDados, Converter={StaticResource InverseBoolToVis}}">
+                    <ItemsControl ItemsSource="{Binding Jogadores}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="110"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" Grid.ColumnSpan="5"
+                                            Background="#33FFFFFF" CornerRadius="6"/>
+
+                                    <TextBlock Grid.Column="0" Text="{Binding Nome}"
+                                               FontFamily="Impact" FontSize="16" Foreground="White"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,6"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding N_Partidas_Jogadas}"
+                                               FontFamily="Impact" FontSize="16" Foreground="White"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding N_Partidas_Ganhos}"
+                                               FontFamily="Impact" FontSize="16" Foreground="#00FF88"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="{Binding N_Jogos_Jogados}"
+                                               FontFamily="Impact" FontSize="16" Foreground="White"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="4" Text="{Binding TaxaVitoriaStr}"
+                                               FontFamily="Impact" FontSize="16" Foreground="#FFD700"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- Mensagem quando não há dados — ligada a SemDados -->
+                <TextBlock Grid.Row="1"
+                           Text="Ainda não existem estatísticas guardadas."
+                           FontFamily="Impact" FontSize="18"
+                           Foreground="#AAFFFFFF"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Visibility="{Binding SemDados, Converter={StaticResource BoolToVis}}"/>
+            </Grid>
+        </Border>
+
+        <!-- BOTÃO VOLTAR -->
+        <Button Content="← VOLTAR"
+                FontFamily="Impact" FontSize="18" FontWeight="Bold"
+                Foreground="#FFD700" Background="Transparent" BorderThickness="0"
+                Cursor="Hand"
+                HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                Margin="40,0,0,30"
+                Command="{Binding VoltarCommand}">
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="Black" Opacity="0.9"/>
+            </Button.Effect>
+        </Button>
+
+        <!-- BOTÃO LIMPAR -->
+        <Button Content="LIMPAR DADOS"
+                FontFamily="Impact" FontSize="18" FontWeight="Bold"
+                Foreground="#FF4444" Background="Transparent" BorderThickness="0"
+                Cursor="Hand"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Margin="0,0,40,30"
+                Command="{Binding LimparCommand}">
+            <Button.Effect>
+                <DropShadowEffect BlurRadius="6" ShadowDepth="2" Color="Black" Opacity="0.9"/>
+            </Button.Effect>
+        </Button>
+
+    </Grid>
+</Window>
+

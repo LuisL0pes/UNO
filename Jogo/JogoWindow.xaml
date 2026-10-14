@@ -1,0 +1,382 @@
+<Window x:Class="Jogo.JogoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="UNO" Height="750" Width="1050"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!-- Carta do jogador humano -->
+        <Style x:Key="CartaHumanoStyle" TargetType="Button">
+            <Setter Property="Width"           Value="90"/>
+            <Setter Property="Height"          Value="126"/>
+            <Setter Property="Margin"          Value="5,0"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="Padding"         Value="0"/>
+            <Style.Triggers>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsMouseOver" Value="True"/>
+                        <Condition Property="IsEnabled"   Value="True"/>
+                    </MultiTrigger.Conditions>
+                    <MultiTrigger.Setters>
+                        <Setter Property="RenderTransform">
+                            <Setter.Value><TranslateTransform Y="-14"/></Setter.Value>
+                        </Setter>
+                        <Setter Property="Panel.ZIndex" Value="10"/>
+                    </MultiTrigger.Setters>
+                </MultiTrigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.45"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Botão de ação genérico -->
+        <Style x:Key="BtnAcaoStyle" TargetType="Button">
+            <Setter Property="Foreground"      Value="White"/>
+            <Setter Property="FontWeight"      Value="Bold"/>
+            <Setter Property="FontSize"        Value="13"/>
+            <Setter Property="Padding"         Value="14,7"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" CornerRadius="6"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.35"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Botão circular de cor (escolha após Joker) -->
+        <Style x:Key="BtnCorStyle" TargetType="Button">
+            <Setter Property="Width"           Value="50"/>
+            <Setter Property="Height"          Value="50"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding"         Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" CornerRadius="25"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="3" BorderBrush="White">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#ffe066"/>
+                                <Setter TargetName="bd" Property="BorderThickness" Value="4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Painel de bot — destaca borda quando Ativo=True -->
+        <Style x:Key="BotPanelStyle" TargetType="Border">
+            <Setter Property="CornerRadius"    Value="10"/>
+            <Setter Property="Padding"         Value="10,8"/>
+            <Setter Property="Background"      Value="#AA000000"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="BorderBrush"     Value="Transparent"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Ativo}" Value="True">
+                    <Setter Property="BorderBrush" Value="#E63946"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+        <!-- Fundo -->
+        <Image Source="/Assets/background_game.jpeg" Stretch="UniformToFill"/>
+        <Rectangle Fill="#55000000"/>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44"/>    <!-- barra topo -->
+                <RowDefinition Height="*"/>     <!-- área jogo -->
+                <RowDefinition Height="175"/>   <!-- mão humano -->
+            </Grid.RowDefinitions>
+
+            <!-- ══════════════════════════════════════════
+                 LINHA 0 — Barra: Pausa | Ajuda | Estado | Sair
+                 ══════════════════════════════════════════ -->
+            <Grid Grid.Row="0" Background="#DD000000">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Content="Pausa"
+                        Style="{StaticResource BtnAcaoStyle}"
+                        Background="Transparent"
+                        FontSize="15" Margin="12,0,0,0"
+                        Command="{Binding PausaCommand}"/>
+
+                <Button Grid.Column="1" Content="Ajuda"
+                        Style="{StaticResource BtnAcaoStyle}"
+                        Background="Transparent"
+                        FontSize="15" Margin="4,0"
+                        Command="{Binding AjudaCommand}"/>
+
+                <TextBlock Grid.Column="2"
+                           Text="{Binding EstadoTexto}"
+                           Foreground="White" FontWeight="Bold" FontSize="14"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <Button Grid.Column="3" Content="Sair"
+                        Style="{StaticResource BtnAcaoStyle}"
+                        Background="#8B0000"
+                        FontSize="13" Margin="0,0,12,0"
+                        Command="{Binding SairCommand}"/>
+            </Grid>
+
+            <!-- ══════════════════════════════════════════
+                 LINHA 1 — Área de jogo
+                 Layout: 3 colunas × 3 linhas
+                 
+                   [vazio] [Bot2-topo] [vazio]
+                   [Bot1-esq] [Mesa] [Bot3-dir]
+                   [vazio] [vazio]  [vazio]
+                 ══════════════════════════════════════════ -->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>  <!-- linha topo: Bot2 -->
+                    <RowDefinition Height="*"/>     <!-- linha meio: Bot1 | Mesa | Bot3 -->
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="185"/> <!-- coluna esquerda: Bot1 -->
+                    <ColumnDefinition Width="*"/>   <!-- coluna centro: Bot2 topo + Mesa -->
+                    <ColumnDefinition Width="185"/> <!-- coluna direita: Bot3 -->
+                </Grid.ColumnDefinitions>
+
+                <!-- ── Bot 2 — TOPO CENTRO ── -->
+                <Border Grid.Row="0" Grid.Column="1"
+                        DataContext="{Binding Bot2}"
+                        Style="{StaticResource BotPanelStyle}"
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,0"
+                        Visibility="{Binding Visivel, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding NomeComIndicador}"
+                                   Foreground="White" FontSize="14" FontWeight="Bold"
+                                   HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                        <Canvas Height="65" Width="160" HorizontalAlignment="Center"
+                                x:Name="CartasBot2Canvas"/>
+                        <TextBlock Text="{Binding LabelCartas}"
+                                   Foreground="#bbbbbb" FontSize="12"
+                                   HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- ── Bot 1 — ESQUERDA ── -->
+                <Border Grid.Row="1" Grid.Column="0"
+                        DataContext="{Binding Bot1}"
+                        Style="{StaticResource BotPanelStyle}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Margin="8,0"
+                        Visibility="{Binding Visivel, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding NomeComIndicador}"
+                                   Foreground="White" FontSize="14" FontWeight="Bold"
+                                   HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                        <Canvas Height="75" Width="130" HorizontalAlignment="Center"
+                                x:Name="CartasBot1Canvas"/>
+                        <TextBlock Text="{Binding LabelCartas}"
+                                   Foreground="#bbbbbb" FontSize="12"
+                                   HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- ── MESA CENTRAL ── -->
+                <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Seta de sentido de jogo -->
+                    <TextBlock Grid.Row="0"
+                               Text="{Binding Sentido}"
+                               FontSize="56"
+                               Foreground="White" Opacity="0.55"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,10"/>
+
+                    <!-- Baralho + Carta do topo -->
+                    <StackPanel Grid.Row="1"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Center">
+
+                        <!-- Baralho de compra -->
+                        <StackPanel Margin="0,0,22,0">
+                            <Button Width="90" Height="126"
+                                    Cursor="Hand" BorderThickness="0"
+                                    Background="Transparent" Padding="0"
+                                    IsEnabled="{Binding ComprarEnabled}"
+                                    Command="{Binding ComprarCommand}"
+                                    ToolTip="Clica para comprar uma carta">
+                                <Image Source="/Assets/card_back.png"
+                                       Width="90" Height="126"
+                                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </Button>
+                            <TextBlock Text="{Binding NumBaralho}"
+                                       Foreground="White" FontSize="12"
+                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <!-- Carta do topo -->
+                        <Border CornerRadius="10"
+                                BorderBrush="#ffffff44" BorderThickness="2"
+                                Width="90" Height="126">
+                            <Image Source="{Binding ImagemCartaTopo}"
+                                   RenderOptions.BitmapScalingMode="HighQuality"
+                                   Stretch="Uniform"/>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Linha de ações: cor ativa | comprar | UNO | escolha cor -->
+                    <StackPanel Grid.Row="2"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                Margin="0,14,0,0">
+
+                        <Border Width="20" Height="20" CornerRadius="10"
+                                Background="{Binding CorAtivaPincel}"
+                                VerticalAlignment="Center"
+                                Margin="0,0,6,0"/>
+                        <TextBlock Text="{Binding CorAtivaTexto}"
+                                   Foreground="White" FontSize="13"
+                                   VerticalAlignment="Center" Margin="0,0,18,0"/>
+
+                        <Button Content="{Binding TextoComprar}"
+                                Style="{StaticResource BtnAcaoStyle}"
+                                Background="#c0392b"
+                                IsEnabled="{Binding ComprarEnabled}"
+                                Command="{Binding ComprarCommand}"/>
+
+                        <Button Content="🃏 UNO!"
+                                Style="{StaticResource BtnAcaoStyle}"
+                                Background="#e67e22"
+                                FontSize="15"
+                                Margin="10,0,0,0"
+                                Visibility="{Binding UnoVisivel, Converter={StaticResource BoolToVis}}"
+                                Command="{Binding GritarUnoCommand}"/>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Visibility="{Binding EscolhaCorVisivel, Converter={StaticResource BoolToVis}}"
+                                    Margin="16,0,0,0">
+                            <TextBlock Text="Escolhe a cor:"
+                                       Foreground="White" FontWeight="Bold"
+                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <Button Style="{StaticResource BtnCorStyle}"
+                                    Background="#c0392b" Margin="4,0"
+                                    Command="{Binding EscolherCorCommand}"
+                                    CommandParameter="Vermelho"/>
+                            <Button Style="{StaticResource BtnCorStyle}"
+                                    Background="#27ae60" Margin="4,0"
+                                    Command="{Binding EscolherCorCommand}"
+                                    CommandParameter="Verde"/>
+                            <Button Style="{StaticResource BtnCorStyle}"
+                                    Background="#2980b9" Margin="4,0"
+                                    Command="{Binding EscolherCorCommand}"
+                                    CommandParameter="Azul"/>
+                            <Button Style="{StaticResource BtnCorStyle}"
+                                    Background="#f1c40f" Margin="4,0"
+                                    Command="{Binding EscolherCorCommand}"
+                                    CommandParameter="Amarelo"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+
+                <!-- ── Bot 3 — DIREITA ── -->
+                <Border Grid.Row="1" Grid.Column="2"
+                        DataContext="{Binding Bot3}"
+                        Style="{StaticResource BotPanelStyle}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Margin="8,0"
+                        Visibility="{Binding Visivel, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="{Binding NomeComIndicador}"
+                                   Foreground="White" FontSize="14" FontWeight="Bold"
+                                   HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                        <Canvas Height="75" Width="130" HorizontalAlignment="Center"
+                                x:Name="CartasBot3Canvas"/>
+                        <TextBlock Text="{Binding LabelCartas}"
+                                   Foreground="#bbbbbb" FontSize="12"
+                                   HorizontalAlignment="Center" Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Border>
+
+            </Grid><!-- /Grid linha 1 -->
+
+            <!-- ══════════════════════════════════════════
+                 LINHA 2 — Mão do jogador humano
+                 ══════════════════════════════════════════ -->
+            <Grid Grid.Row="2" Background="#CC000000">
+
+                <TextBlock Text="{Binding NomeHumano}"
+                           Foreground="#aaaacc" FontSize="12"
+                           HorizontalAlignment="Left" VerticalAlignment="Top"
+                           Margin="14,5,0,0"/>
+
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Disabled"
+                              VerticalAlignment="Bottom"
+                              Padding="0,20,0,0">
+                    <ItemsControl ItemsSource="{Binding MaoHumano}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Bottom"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource CartaHumanoStyle}"
+                                        IsEnabled="{Binding Jogavel}"
+                                        Command="{Binding DataContext.JogarCartaCommand,
+                                                  RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding Carta}">
+                                    <Image Source="{Binding ImagemPath}"
+                                           Width="88" Height="123"
+                                           RenderOptions.BitmapScalingMode="HighQuality"
+                                           Stretch="Uniform"/>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+
+        </Grid>
+    </Grid>
+</Window>

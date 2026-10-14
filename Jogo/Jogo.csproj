@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Impede que o SDK inclua automaticamente os ficheiros gerados em obj/ -->
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <!-- Assets das cartas e background como Resource embebido -->
+  <ItemGroup>
+    <Resource Include="Assets\**\*.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove=".vs\**" />
+    <Compile Remove="bin\**" />
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove=".vs\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove=".vs\**" />
+    <None Remove="bin\**" />
+    <None Remove="obj\**" />
+    <Page Remove=".vs\**" />
+    <Page Remove="bin\**" />
+    <Page Remove="obj\**" />
+  </ItemGroup>
+
+  <!--
+    NÃO adicionar <Compile Include="..."/> manualmente.
+    O SDK já inclui automaticamente todos os .cs da pasta do projeto.
+    
+    Se tiveres linhas do género:
+      <Compile Include="App.xaml.cs" />
+      <Compile Include="MainWindow.xaml.cs" />
+      etc.
+    APAGA-AS TODAS — são a causa dos erros CS0111 / NETSDK1022.
+  -->
+
+</Project>
